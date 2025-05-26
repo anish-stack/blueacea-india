@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AppRegistry, View, StyleSheet, Text } from "react-native";
 import { name as appName } from "./app.json";
 import { NavigationContainer } from "@react-navigation/native";
@@ -18,165 +18,242 @@ import DService from "./components/Services/DService";
 import RegisterUser from "./screens/auth/Register/RegisterUser";
 import Careers from "./Page/careers/Careers";
 import PasswordChange from "./Page/PasswordChange/PasswordChange";
-import * as Sentry from "@sentry/react-native";
 import ErrorBoundary from "./ErrorBoundary";
 import ChatbotWidget from "./ChatbotWidget";
 
 const Stack = createNativeStackNavigator();
-Sentry.init({
-  dsn: "https://f29c39fb64cd55aa32ae090d610a945d@o4508873810771970.ingest.us.sentry.io/4508878224752640",
-  enableInExpoDevelopment: true, // If using Expo
-  debug: __DEV__,
-  environment: __DEV__ ? "development" : "production",
-  tracesSampleRate: 1.0,
-  enableAutoSessionTracking: true,
-  enableNative: true,
-});
 
 const App = () => {
-  const [loading, setLoading] = useState(false);
-  const navigationRef = useRef();
-  const [initialRouteName, setInitialRouteName] = useState("Onboard");
+  console.log("🔄 App component rendering...");
+  
+  // State management
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [initialRouteName, setInitialRouteName] = useState(null);
   const [currentRoute, setCurrentRoute] = useState(null);
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
+  
+  // Refs
+  const navigationRef = useRef(null);
+  const initializationRef = useRef(false); // Prevent multiple initialization calls
 
-  const WhatIsInitial = async () => {
-    setLoading(true);
+  // Memoized token check function to prevent re-renders
+  const checkInitialRoute = useCallback(async () => {
+    console.log("🔍 Starting token check...");
+    
+    // Prevent multiple simultaneous calls
+    if (initializationRef.current) {
+      console.log("⚠️ Token check already in progress, skipping...");
+      return;
+    }
+    
+    initializationRef.current = true;
+    setIsInitializing(true);
+    
     try {
+      console.log("📡 Calling CheckToken API...");
+      const startTime = Date.now();
+      
       const data = await CheckToken();
+      console.log("📡 Calling CheckToken DATA...",data);
+
+      const endTime = Date.now();
+      console.log(`✅ CheckToken completed in ${endTime - startTime}ms`);
+      console.log("📄 CheckToken response:", JSON.stringify(data, null, 2));
+      
       if (data?.success) {
+        console.log("🏠 Setting initial route to 'home' (authenticated)");
         setInitialRouteName("home");
       } else {
+        console.log("👋 Setting initial route to 'Onboard' (not authenticated)");
         setInitialRouteName("Onboard");
       }
     } catch (error) {
-      Sentry.captureException(error);
+      console.error("❌ CheckToken error:", error);
+      console.error("📋 Error details:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      
+      console.log("🔄 Falling back to 'Onboard' due to error");
       setInitialRouteName("Onboard");
+      
+      // Uncomment if you're using Sentry
+      // Sentry.captureException(error);
     } finally {
-      setLoading(false);
+      console.log("🏁 Token check process completed");
+      setIsInitializing(false);
+      initializationRef.current = false;
     }
-  };
-  useEffect(() => {
-    Sentry.captureMessage("Expo Go Test Message");
-    Sentry.captureException(new Error("Expo Go Test Error"));
   }, []);
 
-  useEffect(() => {
-    WhatIsInitial();
-  }, []);
+  // Track route changes with better logging
+  const handleNavigationStateChange = useCallback(() => {
+    if (!navigationRef.current) {
+      console.log("⚠️ Navigation ref not available");
+      return;
+    }
 
-  useEffect(() => {
-    if (navigationRef.current) {
+    try {
       const currentRouteName = navigationRef.current.getCurrentRoute()?.name;
-      console.log("currentRouteVia use", currentRouteName);
-      setCurrentRoute(currentRouteName);
-
-    } else {
-      console.log("navigationRef.current is null");
+      console.log(`🧭 Navigation state changed - Current route: ${currentRouteName}`);
+      
+      if (currentRouteName !== currentRoute) {
+        console.log(`🔄 Route transition: ${currentRoute} → ${currentRouteName}`);
+        setCurrentRoute(currentRouteName);
+      }
+    } catch (error) {
+      console.error("❌ Error getting current route:", error);
     }
-  }, [navigationRef.current]);
+  }, [currentRoute]);
 
-  if (loading) {
+  // Navigation ready handler
+  const handleNavigationReady = useCallback(() => {
+    console.log("🚀 Navigation container is ready");
+    setIsNavigationReady(true);
+    
+    // Get initial route name
+    if (navigationRef.current) {
+      const initialRoute = navigationRef.current.getCurrentRoute()?.name;
+      console.log(`📍 Initial route detected: ${initialRoute}`);
+      setCurrentRoute(initialRoute);
+    }
+  }, []);
+
+  // Initialize app on mount
+  useEffect(() => {
+    console.log("🚀 App useEffect triggered - Starting initialization");
+    checkInitialRoute();
+    
+    // Cleanup function
+    return () => {
+      console.log("🧹 App cleanup");
+      initializationRef.current = false;
+    };
+  }, []); // Empty dependency array - only run once
+
+  // Log state changes for debugging
+  useEffect(() => {
+    console.log("📊 State update:", {
+      isInitializing,
+      initialRouteName,
+      currentRoute,
+      isNavigationReady
+    });
+  }, [isInitializing, initialRouteName, currentRoute, isNavigationReady]);
+
+  // Show loading screen while checking token
+  if (isInitializing || !initialRouteName) {
+    console.log("⏳ Showing loading screen", { isInitializing, initialRouteName });
+    
     return (
       <View style={styles.loaderContainer}>
         <LoadingSpinner />
-        <Text style={styles.loaderText}>Loading, please wait...</Text>
+        <Text style={styles.loaderText}>
+          {isInitializing ? "Authenticating..." : "Loading, please wait..."}
+        </Text>
+        <Text style={styles.debugText}>
+          {isInitializing ? "Checking authentication status..." : "Preparing app..."}
+        </Text>
       </View>
     );
   }
 
+  console.log(`🎯 Rendering navigation with initial route: ${initialRouteName}`);
+
   return (
     <NavigationContainer
       ref={navigationRef}
-      onStateChange={() => {
-        const currentRouteName = navigationRef.current.getCurrentRoute()?.name;
-        console.log("currentRouteName", currentRouteName);
-        setCurrentRoute(currentRouteName);
-      }}
+      onReady={handleNavigationReady}
+      onStateChange={handleNavigationStateChange}
     >
-      <Stack.Navigator initialRouteName={initialRouteName}>
+      <Stack.Navigator 
+        initialRouteName={initialRouteName}
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_right', // Add smooth transitions
+        }}
+      >
         <Stack.Screen
           name="Onboard"
-          options={{ headerShown: false }}
           component={OnboardingScreen}
         />
         <Stack.Screen
           name="login"
-          options={{ headerShown: false }}
           component={Login}
         />
         <Stack.Screen
-          name="Careers"
-          options={{ headerShown: false }}
-          component={Careers}
+          name="register"
+          component={RegisterUser}
         />
         <Stack.Screen
           name="home"
-          options={{ headerShown: false }}
           component={Home}
         />
         <Stack.Screen
           name="service_details"
-          options={{ headerShown: false }}
           component={Service_Details}
         />
         <Stack.Screen
           name="Booking"
-          options={{ headerShown: false }}
           component={Booking}
         />
         <Stack.Screen
           name="Booking-Successful"
-          options={{ headerShown: false }}
           component={BookingSuccess}
         />
         <Stack.Screen
           name="get-a-call"
-          options={{ headerShown: false }}
           component={FormCall}
         />
         <Stack.Screen
           name="Profile"
-          options={{ headerShown: false }}
           component={Profile}
         />
         <Stack.Screen
           name="order"
-          options={{ headerShown: false }}
           component={OrderPage}
         />
         <Stack.Screen
-          name="register"
-          options={{ headerShown: false }}
-          component={RegisterUser}
-        />
-        <Stack.Screen
           name="resetpassword"
-          options={{ headerShown: false }}
           component={PasswordChange}
         />
         <Stack.Screen
           name="Services"
-          options={{ headerShown: false }}
           component={DService}
         />
+        <Stack.Screen
+          name="Careers"
+          component={Careers}
+        />
       </Stack.Navigator>
-      {currentRoute === "home" && <ChatbotWidget />}
+      
+      {/* Only show chatbot on home screen and when navigation is ready */}
+      {currentRoute === "home" && isNavigationReady && (
+        <>
+          {console.log("🤖 Rendering ChatbotWidget")}
+          <ChatbotWidget />
+        </>
+      )}
     </NavigationContainer>
   );
 };
 
-const RootApp = () => (
-  <ErrorBoundary>
-    <App />
+const RootApp = () => {
+  console.log("🌟 RootApp rendering");
+  
+  return (
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
+};
 
-  </ErrorBoundary>
-);
+// Register the app
+console.log("📱 Registering app component:", appName);
+AppRegistry.registerComponent(appName, () => RootApp);
 
-const WrappedApp = Sentry.wrap(RootApp);
-
-AppRegistry.registerComponent(appName, () => WrappedApp);
-
-export default WrappedApp;
+export default RootApp;
 
 const styles = StyleSheet.create({
   loaderContainer: {
@@ -184,11 +261,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#ffffff",
+    paddingHorizontal: 20,
   },
   loaderText: {
     marginTop: 16,
-    fontSize: 16,
+    fontSize: 18,
     color: "#0d6efd",
-    fontWeight: "500",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  debugText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: "#6c757d",
+    fontStyle: "italic",
+    textAlign: "center",
   },
 });

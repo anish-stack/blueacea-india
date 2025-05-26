@@ -59,7 +59,7 @@ export default function RegisterUser() {
             const res = await axios.post('https://api.blueaceindia.com/api/v1/Create-User', formData);
             const { success, token } = res.data
             await new Promise(resolve => setTimeout(resolve, 1500));
-            if (success) {
+            if (success && token) {
                 save('token', token)
                 Alert.alert("Registration Successful!",
                     "You have successfully registered. You will be redirected to the home page.",

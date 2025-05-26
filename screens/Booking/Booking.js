@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Linking ,Platform} from 'react-native';
 import { Audio } from 'expo-av';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
@@ -25,15 +25,15 @@ export default function Booking() {
   const [formData, setFormData] = useState({
     userId: '',
     serviceId: '',
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    message: '',
+    fullName: 'anish',
+    email: 'a@gmail.com',
+    phoneNumber: '7217619794',
+    message: '33',
     voiceNote: '',
-    address: '',
+    address: '33',
     serviceType: '',
-    Pincode: '',
-    House: '',
+    Pincode: '110086',
+    House: '109',
     nearByLandMark: '',
     RangeWhereYouWantService: [
       {
@@ -123,18 +123,23 @@ export default function Booking() {
   };
 
   const handleSubmit = async () => {
-console.log(formData?.RangeWhereYouWantService[0]?.location)
+    console.log(formData?.RangeWhereYouWantService[0]?.location);
     const errors = validateForm();
+  
     if (Object.keys(errors).length > 0) {
-
-      const errorMessages = Object.entries(errors).map(([field, error]) => ` ${error}`).join('\n');
+      const errorMessages = Object.entries(errors)
+        .map(([field, error]) => ` ${error}`)
+        .join('\n');
       Alert.alert('Input Empty 📝', errorMessages);
       return;
     }
+  
     setLoading(true);
-
+  
     try {
       const form = new FormData();
+  
+      // Append regular form data
       Object.keys(formData).forEach(key => {
         if (key === 'RangeWhereYouWantService') {
           form.append(key, JSON.stringify(formData[key]));
@@ -142,52 +147,84 @@ console.log(formData?.RangeWhereYouWantService[0]?.location)
           form.append(key, formData[key]);
         }
       });
-
+  
+      // Append voice recording (if exists)
       if (recordings.length > 0 && recordings[0].file) {
+        const rawUri = recordings[0].file;
+        console.log('Recording URI:', rawUri);
+        const fileUri = rawUri.startsWith('file://') ? rawUri : `file://${rawUri}`;
+  
         form.append('voiceNote', {
-          uri: recordings[0].file,
-          type: 'audio/wav',
+          uri: fileUri,
+          type: 'audio/x-wav', 
           name: 'voiceNote.wav',
         });
       }
-
+  
       const response = await axios.post('https://api.blueaceindia.com/api/v1/make-order-app', form, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(response?.data?.data)
+  
+      console.log(response?.data?.data);
+  
       if (response.data.success) {
         Alert.alert('Booking Successful', 'Your booking has been made successfully.');
         navigation.navigate('Booking-Successful', { data: response?.data?.data });
       } else {
         Alert.alert('Booking Failed', response.data.message || 'An unknown error occurred.');
       }
+  
     } catch (error) {
-      console.error('Booking Error:',error.response.data.message);
-      Alert.alert('Booking Failed By ', 'There was an error submitting your booking. Please try again.');
+      console.error('Booking Error:', error?.response?.data || error);
+      Alert.alert('Booking Failed', 'There was an error submitting your booking. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   async function startRecording() {
     try {
-      const perm = await Audio.requestPermissionsAsync();
-      if (perm.status === 'granted') {
+      const { status, canAskAgain } = await Audio.requestPermissionsAsync();
+  
+      if (status === 'granted') {
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
+  
         const { recording } = await Audio.Recording.createAsync(
           Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
         );
         setRecording(recording);
+      } else if (!canAskAgain) {
+        // Permission permanently denied — guide user to settings
+        Alert.alert(
+          'Microphone Permission Required',
+          'To record your voice, please enable microphone access in your settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Open Settings',
+              onPress: () => {
+                if (Platform.OS === 'ios') {
+                  Linking.openURL('app-settings:');
+                } else {
+                  Linking.openSettings();
+                }
+              },
+            },
+          ]
+        );
       } else {
-        Alert.alert('Permission required', 'We need your permission to record audio.');
+        // Permission denied but can ask again
+        Alert.alert('Permission Required', 'We need your permission to record audio.');
       }
     } catch (err) {
       console.error('Failed to start recording:', err);
+      Alert.alert('Error', 'An error occurred while trying to start recording.');
     }
   }
 

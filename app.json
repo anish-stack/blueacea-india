@@ -19,7 +19,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/ic_launcher-web.png"
+      "icon": "./assets/ic_launcher-web.png",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app uses your microphone to let you explain your issue or concern through voice. This helps us understand and assist you better."
+      },
+      "bundleIdentifier": "com.hbs.blueacea"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,6 +33,8 @@
       "icon": "./assets/ic_launcher-web.png",
       "permissions": [
         "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "package": "com.hbs.blueacea"
@@ -37,13 +43,28 @@
       "favicon": "./assets/ic_launcher-web.png"
     },
     "plugins": [
-      "expo-audio"
+      "expo-audio",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "podfileProperties": {
+              "use_modular_headers!": true
+            }
+          }
+        }
+      ]
     ],
     "extra": {
       "playStoreIcon": "./assets/playstore-icon.png",
       "eas": {
         "projectId": "7d5b7a1a-6edb-4415-8822-663fa679c9fa"
       }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/7d5b7a1a-6edb-4415-8822-663fa679c9fa"
     }
   }
 }
