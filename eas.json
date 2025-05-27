@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">= 14.3.1",
-    "appVersionSource": "remote"
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "development": {
@@ -34,14 +35,17 @@
       "ios": {
         "buildConfiguration": "Release",
         "simulator": false
+
       },
       "channel": "production"
     }
   },
   "submit": {
-      "ios":{
+    "production": {
+      "ios": {
         "appleId": "info@hovermedia.in",
-        "ascAppId":"6746437160"
+        "ascAppId": "6746437160"
       }
+    }
   }
 }

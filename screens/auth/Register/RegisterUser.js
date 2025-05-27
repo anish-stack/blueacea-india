@@ -2,7 +2,8 @@ import {
     View, Text, StyleSheet, ScrollView, TouchableOpacity,
     Image, ActivityIndicator, TextInput, Alert, Platform,
     ToastAndroid, KeyboardAvoidingView, Keyboard, Animated,
-    StatusBar
+    StatusBar,
+    Linking
 } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -499,6 +500,11 @@ export default function RegisterUser() {
                             disabled={loading}
                             activeOpacity={0.8}
                         >
+                            <TouchableOpacity onPress={()=> Linking.openURL('https://www.blueaceindia.com/privacy')} activeOpacity={0.7} style={{ marginBottom: 20 }}>
+                                <Text>
+                                    Read our <Text style={{ color: '#0066cc', fontWeight: 'bold' }}>Terms & Conditions</Text> and <Text style={{ color: '#0066cc', fontWeight: 'bold' }}>Privacy Policy</Text>
+                                </Text>
+                            </TouchableOpacity>
                             <LinearGradient
                                 colors={loading ? ['#ccc', '#999'] : ['#0066cc', '#004499']}
                                 style={styles.buttonGradient}

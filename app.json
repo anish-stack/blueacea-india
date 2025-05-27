@@ -17,9 +17,21 @@
       "supportsTablet": true,
       "icon": "./assets/ic_launcher-web.png",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "This app uses your microphone to let you explain your issue or concern through voice. This helps us understand and assist you better."
+        "NSMicrophoneUsageDescription": "This app uses your microphone to let you explain your issue or concern through voice. This helps us understand and assist you better.",
+        "LSApplicationQueriesSchemes": [
+          "tel",
+          "mailto",
+          "whatsapp",
+          "tel",
+          "mailto",
+          "whatsapp"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.hbs.blueace"
+      "bundleIdentifier": "com.blueace.hbs.india",
+      "production":{
+        "distribution":"app-store-connect"
+      }
     },
     "android": {
       "adaptiveIcon": {
