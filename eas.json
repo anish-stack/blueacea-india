@@ -39,6 +39,9 @@
     }
   },
   "submit": {
-  
+      "ios":{
+        "appleId": "info@hovermedia.in",
+        "ascAppId":"6746437160"
+      }
   }
 }

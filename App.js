@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { AppRegistry, View, StyleSheet, Text } from "react-native";
+import { AppRegistry, View, StyleSheet, Text, StatusBar } from "react-native";
 import { name as appName } from "./app.json";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -166,6 +166,7 @@ const App = () => {
       onReady={handleNavigationReady}
       onStateChange={handleNavigationStateChange}
     >
+    <StatusBar barStyle={'default'}/>
       <Stack.Navigator
         initialRouteName={initialRouteName}
         screenOptions={{

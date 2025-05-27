@@ -54,7 +54,7 @@ export default function Service_Details() {
             const duration = type === 'long' ? ToastAndroid.LONG : ToastAndroid.SHORT;
             ToastAndroid.show(message, duration);
         } else {
-            Alert.alert('Info', message);
+            return
         }
     };
 
@@ -165,7 +165,7 @@ export default function Service_Details() {
         }
 
         if (skipLogin) {
-            navigation.navigate('Login');
+            navigation.navigate('login');
             showToast('Please login to continue booking');
         } else {
             navigation.navigate('Booking', {

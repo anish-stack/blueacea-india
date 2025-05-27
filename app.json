@@ -19,7 +19,7 @@
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app uses your microphone to let you explain your issue or concern through voice. This helps us understand and assist you better."
       },
-      "bundleIdentifier": "com.hbs.blueacea"
+      "bundleIdentifier": "com.hbs.blueace"
     },
     "android": {
       "adaptiveIcon": {

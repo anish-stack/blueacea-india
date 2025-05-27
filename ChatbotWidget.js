@@ -4,7 +4,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Dimensions
+  Dimensions,
+  Platform
 } from "react-native"
 import { WebView } from "react-native-webview"
 import { Ionicons } from "@expo/vector-icons"
@@ -233,7 +234,7 @@ const ChatbotWidget = () => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 70,
+    bottom: 100,
     right: 20,
     width: width - 40,
     borderRadius: 12,
@@ -255,7 +256,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   expandedChat: {
-    flex: 1,
+    position: "absolute",
+    top: 90,
+    right: 0,
+  
+    height:Platform.OS === 'ios' ? height - 250 : height - 100,
     position: "relative",
   },
   closeButton: {
