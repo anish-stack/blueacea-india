@@ -9,6 +9,9 @@ import { colors } from '../../../colors/Colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { login } from '../../../utils/api/Api';
 import LoadingSpinner from '../../../components/common/Loader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSkip } from '../../../context/SkipContext';
+import { save } from '../../../Service/SecureStore';
 
 export default function Login() {
     const [loginMethod, setLoginMethod] = useState('phone'); // 'email' or 'phone'
@@ -18,6 +21,7 @@ export default function Login() {
         phoneNumber: '',
     });
 
+    const { saveSkipLogin } = useSkip()
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
     const navigation = useNavigation();
@@ -62,6 +66,21 @@ export default function Login() {
         return valid;
     };
 
+    const handleSkip = async () => {
+        await saveSkipLogin(true)
+        Alert.alert("Skip Login", "You can skip login for now, but some features may be limited.");
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    {
+                        name: 'home',
+                    }
+                ],
+            })
+        );
+    }
+
     const handleSubmit = async () => {
         if (!validateInputs()) return;
 
@@ -73,33 +92,40 @@ export default function Login() {
             };
 
             const data = await login(loginData);
+            console.log("Login response:", data);
 
             if (!data || data.success === false) {
                 setErrors({ ...errors, password: data?.msg || "Invalid login credentials." });
                 return;
             }
 
-            Alert.alert("Success!", data.message || "Login successful!");
+            // Check if user is not verified
+            if (data.data && data.data.isVerify === false) {
+                Alert.alert("OTP Sent", data.message || "Verification required.");
+                navigation.navigate("otp", { id: data.data.id, contact: data.data.ContactNumber });
+                return;
+            }
 
+            // Success case
+            Alert.alert("Success!", data.message || "Login successful!");
+            await save('token', data.token);
             setTimeout(() => {
                 navigation.dispatch(
                     CommonActions.reset({
                         index: 0,
-                        routes: [
-                            {
-                                name: 'home',
-                            }
-                        ],
+                        routes: [{ name: 'home' }],
                     })
                 );
             }, 1500);
+
         } catch (error) {
-            console.log(error.message)
+            console.log(error.message);
             Alert.alert("Login failed", error.message);
         } finally {
             setLoading(false);
         }
     };
+
 
     const toggleLoginMethod = () => {
         setLoginMethod(prev => prev === 'email' ? 'phone' : 'email');
@@ -215,23 +241,18 @@ export default function Login() {
                             {loading ? <LoadingSpinner /> : 'Sign In'}
                         </Button>
 
-                        {/* <View style={styles.dividerContainer}>
-                                <View style={styles.divider} />
-                                <Text style={styles.dividerText}>OR</Text>
-                                <View style={styles.divider} />
-                            </View>
+                        <View style={styles.dividerContainer}>
+                            <View style={styles.divider} />
+                            <Text style={styles.dividerText}>OR</Text>
+                            <View style={styles.divider} />
+                        </View>
 
-                            <View style={styles.socialButtons}>
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <Icon name="facebook" size={24} color="#4267B2" />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <Icon name="google" size={24} color="#DB4437" />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <Icon name="apple" size={24} color="#000000" />
-                                </TouchableOpacity>
-                            </View> */}
+                        <View style={styles.socialButtons}>
+                            <TouchableOpacity onPress={() => handleSkip()} >
+                                <Text>Skip To Continue</Text>
+                            </TouchableOpacity>
+
+                        </View>
 
                         <View style={styles.signupContainer}>
                             <Text style={styles.signupText}>Don't have an account? </Text>

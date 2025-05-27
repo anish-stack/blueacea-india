@@ -4,14 +4,16 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { colors } from '../../../colors/Colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSkip } from '../../../context/SkipContext';
 
 const BottomNav = () => {
     const navigation = useNavigation();
     const route = useRoute();
+    const { skipLogin } = useSkip();
 
     const tabs = [
         { name: 'Home', icon: 'home', route: 'home' },
-        { name: 'Profile', icon: 'account', route: 'Profile' },
+        { name: skipLogin ? 'Login' : 'Profile', icon: 'account', route: skipLogin ? 'login' : 'Profile' },
         { name: 'Services', icon: 'briefcase', route: 'Services' },
         { name: 'Careers', icon: 'account-wrench-outline', route: 'Careers' },
         { name: 'Get A Call', icon: 'phone', route: 'get-a-call' },

@@ -4,10 +4,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { colors } from '../../../colors/Colors';
 import { useNavigation } from '@react-navigation/native';
+import { useSkip } from '../../../context/SkipContext';
 
 const Header = () => {
     const navigation = useNavigation()
     const [sidebarVisible, setSidebarVisible] = useState(false);
+    const { skipLogin } = useSkip()
 
     return (
         <View style={styles.header}>
@@ -16,10 +18,19 @@ const Header = () => {
                 <Menu size={24} color={colors.text} />
             </TouchableOpacity> */}
             <Image source={require('./logo_b.jpg')} style={styles.image} />
-            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-                <Icon name="account" size={24} color={colors.text} />
-                {/* <User size={24} color={colors.text} /> */}
-            </TouchableOpacity>
+
+            {skipLogin ? (
+                <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                    <Icon name="login" size={24} color={colors.text} />
+                    {/* <User size={24} color={colors.text} /> */}
+                </TouchableOpacity>
+            ) : (
+
+                <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                    <Icon name="account" size={24} color={colors.text} />
+                    {/* <User size={24} color={colors.text} /> */}
+                </TouchableOpacity>
+            )}
 
 
             <Modal animationType="none" visible={sidebarVisible} transparent>

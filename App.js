@@ -20,18 +20,20 @@ import Careers from "./Page/careers/Careers";
 import PasswordChange from "./Page/PasswordChange/PasswordChange";
 import ErrorBoundary from "./ErrorBoundary";
 import ChatbotWidget from "./ChatbotWidget";
+import { SkipProvider } from "./context/SkipContext";
+import UserVerifyOtp from "./screens/auth/Register/VerifyOtp";
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   console.log("🔄 App component rendering...");
-  
+
   // State management
   const [isInitializing, setIsInitializing] = useState(true);
   const [initialRouteName, setInitialRouteName] = useState(null);
   const [currentRoute, setCurrentRoute] = useState(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
-  
+
   // Refs
   const navigationRef = useRef(null);
   const initializationRef = useRef(false); // Prevent multiple initialization calls
@@ -39,27 +41,27 @@ const App = () => {
   // Memoized token check function to prevent re-renders
   const checkInitialRoute = useCallback(async () => {
     console.log("🔍 Starting token check...");
-    
+
     // Prevent multiple simultaneous calls
     if (initializationRef.current) {
       console.log("⚠️ Token check already in progress, skipping...");
       return;
     }
-    
+
     initializationRef.current = true;
     setIsInitializing(true);
-    
+
     try {
       console.log("📡 Calling CheckToken API...");
       const startTime = Date.now();
-      
+
       const data = await CheckToken();
-      console.log("📡 Calling CheckToken DATA...",data);
+      console.log("📡 Calling CheckToken DATA...", data);
 
       const endTime = Date.now();
       console.log(`✅ CheckToken completed in ${endTime - startTime}ms`);
       console.log("📄 CheckToken response:", JSON.stringify(data, null, 2));
-      
+
       if (data?.success) {
         console.log("🏠 Setting initial route to 'home' (authenticated)");
         setInitialRouteName("home");
@@ -69,15 +71,11 @@ const App = () => {
       }
     } catch (error) {
       console.error("❌ CheckToken error:", error);
-      console.error("📋 Error details:", {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      });
-      
+
+
       console.log("🔄 Falling back to 'Onboard' due to error");
       setInitialRouteName("Onboard");
-      
+
       // Uncomment if you're using Sentry
       // Sentry.captureException(error);
     } finally {
@@ -97,7 +95,7 @@ const App = () => {
     try {
       const currentRouteName = navigationRef.current.getCurrentRoute()?.name;
       console.log(`🧭 Navigation state changed - Current route: ${currentRouteName}`);
-      
+
       if (currentRouteName !== currentRoute) {
         console.log(`🔄 Route transition: ${currentRoute} → ${currentRouteName}`);
         setCurrentRoute(currentRouteName);
@@ -111,7 +109,7 @@ const App = () => {
   const handleNavigationReady = useCallback(() => {
     console.log("🚀 Navigation container is ready");
     setIsNavigationReady(true);
-    
+
     // Get initial route name
     if (navigationRef.current) {
       const initialRoute = navigationRef.current.getCurrentRoute()?.name;
@@ -124,7 +122,7 @@ const App = () => {
   useEffect(() => {
     console.log("🚀 App useEffect triggered - Starting initialization");
     checkInitialRoute();
-    
+
     // Cleanup function
     return () => {
       console.log("🧹 App cleanup");
@@ -145,7 +143,7 @@ const App = () => {
   // Show loading screen while checking token
   if (isInitializing || !initialRouteName) {
     console.log("⏳ Showing loading screen", { isInitializing, initialRouteName });
-    
+
     return (
       <View style={styles.loaderContainer}>
         <LoadingSpinner />
@@ -167,7 +165,7 @@ const App = () => {
       onReady={handleNavigationReady}
       onStateChange={handleNavigationStateChange}
     >
-      <Stack.Navigator 
+      <Stack.Navigator
         initialRouteName={initialRouteName}
         screenOptions={{
           headerShown: false,
@@ -189,6 +187,10 @@ const App = () => {
         <Stack.Screen
           name="home"
           component={Home}
+        />
+        <Stack.Screen
+          name="otp"
+          component={UserVerifyOtp}
         />
         <Stack.Screen
           name="service_details"
@@ -227,7 +229,7 @@ const App = () => {
           component={Careers}
         />
       </Stack.Navigator>
-      
+
       {/* Only show chatbot on home screen and when navigation is ready */}
       {currentRoute === "home" && isNavigationReady && (
         <>
@@ -241,10 +243,12 @@ const App = () => {
 
 const RootApp = () => {
   console.log("🌟 RootApp rendering");
-  
+
   return (
     <ErrorBoundary>
-      <App />
+      <SkipProvider>
+        <App />
+      </SkipProvider>
     </ErrorBoundary>
   );
 };

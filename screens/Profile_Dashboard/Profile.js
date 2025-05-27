@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, RefreshControl, ScrollView, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layout/_layout';
 import { CheckToken, getMyAllOrder } from '../../utils/api/Api';
@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import Password_Change from './Password_Change/Password_Change';
 import { clearStroge } from '../../Service/SecureStore';
 import UpdateProfile from './Updates/UpdateProfile';
+import { useSkip } from '../../context/SkipContext';
 
 const ProfileSection = ({ user }) => (
     <View style={styles.profileCard}>
@@ -49,6 +50,7 @@ export default function Profile() {
     const [openUpdate, setOpenUdate] = useState(false);
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
+    const { clearSkipLogin } = useSkip()
 
     const [orderData, setOrderData] = useState({
         allOrder: [],
@@ -108,6 +110,63 @@ export default function Profile() {
         console.log('Logout pressed');
     };
 
+
+    const handleDelete = async () => {
+        console.log(user?._id, 'user id');
+        if (!user?._id) {
+            handleLogout();
+            await clearSkipLogin()
+
+            Alert.alert('Error', 'User ID is not available. Please try again later.');
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Onboard' }],
+            });
+            return;
+        }
+        Alert.alert(
+            'Delete Account',
+            'Are you sure you want to delete your account? This action cannot be undone.',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            const response = await fetch(`https://api.blueaceindia.com/api/v1/delete-my-account/${user?._id}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+
+                                },
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                Alert.alert('Success', 'Your account has been deleted successfully.');
+                                handleLogout();
+                                await clearSkipLogin()
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'Onboard' }],
+                                });
+                            } else {
+                                Alert.alert('Error', data.message || 'Failed to delete account.');
+                            }
+
+                        } catch (error) {
+                            console.error('Error deleting account:', error);
+
+                        }
+                    },
+                },
+            ]
+        )
+    };
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -135,6 +194,7 @@ export default function Profile() {
                     <ActionButton icon="package-variant" label="My Orders" onPress={() => navigation.navigate('order', { id: user?._id })} />
                     <ActionButton icon="lock" label="Change Password" onPress={() => setOpen(true)} />
                     <ActionButton icon="account-edit" label="Update Profile" onPress={() => setOpenUdate(true)} />
+                    <ActionButton icon="delete" label="Delete Account" onPress={() => handleDelete()} />
                     <ActionButton icon="logout" label="Logout" onPress={handleLogout} />
                 </View>
             </ScrollView>

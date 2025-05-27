@@ -4,9 +4,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { colors } from '../../../colors/Colors';
 import { useNavigation } from '@react-navigation/native';
+import { useSkip } from '../../../context/SkipContext';
 
 const HeaderWithBack = ({ title }) => {
     const navigation = useNavigation();
+    const { skipLogin } = useSkip()
+
     return (
         <View style={styles.header}>
             {/* Back Button with Icon and Title */}
@@ -17,10 +20,18 @@ const HeaderWithBack = ({ title }) => {
             </TouchableOpacity>
 
             {/* User Icon */}
-            <TouchableOpacity>
-          
-                <Icon name="account" size={24} color={colors.text} />
-            </TouchableOpacity>
+            {skipLogin ? (
+                <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                    <Icon name="login" size={24} color={colors.text} />
+                    {/* <User size={24} color={colors.text} /> */}
+                </TouchableOpacity>
+            ) : (
+
+                <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                    <Icon name="account" size={24} color={colors.text} />
+                    {/* <User size={24} color={colors.text} /> */}
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

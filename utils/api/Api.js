@@ -2,7 +2,7 @@ import axios from "axios";
 import { getValueFor, save } from "../Service/SecureStore";
 
 const ENDPOINT_URL = "https://api.blueaceindia.com/api/v1";
-// const ENDPOINT_URL = "http://192.168.1.10:7987/api/v1";
+// const ENDPOINT_URL = "http://192.168.1.26:7987/api/v1";
 
 const handleApiError = (error) => {
   console.error(error?.response?.data?.message || error.message);
@@ -18,10 +18,10 @@ export const login = async (form) => {
       ContactNumber: form?.phoneNumber
     });
 
-    await save('token', response.data.token);
-    return response.data.token;
+    // await save('token', response.data.token);
+    return response.data;
   } catch (error) {
-    return Promise.reject(error.response.data); 
+    return Promise.reject(error.response.data);
   }
 };
 
@@ -42,8 +42,8 @@ export const CheckToken = async () => {
 };
 
 export const GetAllServices = async () => {
-  const token = await getValueFor('token');
-  if (!token) throw new Error("Token not found.");
+  // const token = await getValueFor('token');
+  // // if (!token) throw new Error("Token not found.");
 
   try {
     const response = await axios.get(`${ENDPOINT_URL}/get-all-service-category`);
@@ -66,8 +66,8 @@ export const promotionalBanner = async () => {
 };
 
 export const ServiceByName = async (name) => {
-  const token = await getValueFor('token');
-  if (!token) throw new Error("Token not found.");
+  // const token = await getValueFor('token');
+  // if (!token) throw new Error("Token not found.");
 
   try {
     const response = await axios.get(`${ENDPOINT_URL}/get-service-category-by-name/${name}`);
