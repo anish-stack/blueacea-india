@@ -5,11 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/ic_launcher-web.png",
-    "platforms": [
-      "android",
-      "ios",
-      "web"
-    ],
+    "platforms": ["android", "ios", "web"],
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -64,6 +60,8 @@
     },
     "runtimeVersion": "1.0.0",
     "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/7d5b7a1a-6edb-4415-8822-663fa679c9fa"
     }
   }

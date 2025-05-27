@@ -22,6 +22,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import ChatbotWidget from "./ChatbotWidget";
 import { SkipProvider } from "./context/SkipContext";
 import UserVerifyOtp from "./screens/auth/Register/VerifyOtp";
+import CheckAppUpdate from "./context/CheckAppUpdate";
 
 const Stack = createNativeStackNavigator();
 
@@ -56,11 +57,11 @@ const App = () => {
       const startTime = Date.now();
 
       const data = await CheckToken();
-      console.log("📡 Calling CheckToken DATA...", data);
+      // console.log("📡 Calling CheckToken DATA...", data);
 
       const endTime = Date.now();
       console.log(`✅ CheckToken completed in ${endTime - startTime}ms`);
-      console.log("📄 CheckToken response:", JSON.stringify(data, null, 2));
+      // console.log("📄 CheckToken response:", JSON.stringify(data, null, 2));
 
       if (data?.success) {
         console.log("🏠 Setting initial route to 'home' (authenticated)");
@@ -246,9 +247,12 @@ const RootApp = () => {
 
   return (
     <ErrorBoundary>
+      <CheckAppUpdate>
+
       <SkipProvider>
         <App />
       </SkipProvider>
+      </CheckAppUpdate>
     </ErrorBoundary>
   );
 };
