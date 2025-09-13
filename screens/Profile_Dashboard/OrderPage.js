@@ -60,6 +60,20 @@ const OrderCard = ({ order, refreshControl }) => {
         }
     };
 
+    const handleServiceDone = async (id) => {
+        try {
+            const response = await axios.put(`https://www.api.blueaceindia.com/api/v1/update-service-done-order/${id}`);
+            if (response.data.success) {
+                alert('Service marked as done successfully')
+                refreshControl();
+                // toast.success('Service marked as done successfully');
+                // window.location.reload();
+            }
+        } catch (error) {
+            console.log('Internal server error in service done', error);
+        }
+    }
+
 
 
     return (
@@ -186,14 +200,23 @@ const OrderCard = ({ order, refreshControl }) => {
                             </View>
                         </View>
                     )}
-                    <View style={[styles.detailSection, { padding: 10, backgroundColor: '#f9f9f9', borderRadius: 8 }]}>
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>
-                            Bill Status:
-                            <Text style={{ color: order.EstimatedBill?.BillStatus === 'Accepted' ? '#4CAF50' : '#F44336' }}>
-                                {' '}{order.EstimatedBill?.BillStatus || 'Bill Not Generatted Yet'}
+                    {order?.userId?.isAMCUser ? (
+                         <View style={[styles.detailSection, { padding: 10, backgroundColor: '#f9f9f9', borderRadius: 8 }]}>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>
+                                You are a AMC User
                             </Text>
-                        </Text>
-                    </View>
+                        </View>
+                    ) : (
+                        <View style={[styles.detailSection, { padding: 10, backgroundColor: '#f9f9f9', borderRadius: 8 }]}>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>
+                                Bill Status:
+                                <Text style={{ color: order.EstimatedBill?.BillStatus === 'Accepted' ? '#4CAF50' : '#F44336' }}>
+                                    {' '}{order.EstimatedBill?.BillStatus || 'Bill Not Generatted Yet'}
+                                </Text>
+                            </Text>
+                        </View>
+
+                    )}
 
 
 
@@ -245,10 +268,18 @@ const OrderCard = ({ order, refreshControl }) => {
                             </View>
                         </View>
                     )}
+                    {/* {console.log("refreshControl();",order?.userId?.isAMCUser)} */}
 
-                    {order && order.hasOwnProperty('afterWorkVideo') && order.PaymentStatus === 'pending' && (
-                        <Button onPress={PayMoney}>Pay Now</Button>
+                    {!order?.userId?.isAMCUser ? (
+                        order && order.hasOwnProperty('afterWorkVideo') && order.PaymentStatus === 'pending' && (
+                            <Button onPress={PayMoney}>Pay Now</Button>
+                        )
+                    ) : (
+                        order && order.hasOwnProperty('afterWorkVideo') && order.PaymentStatus === 'pending' && (
+                            <Button onPress={() => handleServiceDone(order?._id)}>Service Done</Button>
+                        )
                     )}
+
 
 
                 </View>

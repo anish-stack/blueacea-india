@@ -10,6 +10,7 @@ const Header = () => {
     const navigation = useNavigation()
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const { skipLogin } = useSkip()
+    console.log("skipLogin",skipLogin)
 
     return (
         <View style={styles.header}>

@@ -2,14 +2,12 @@ import { View, Text, KeyboardAvoidingView, ScrollView, StyleSheet, Platform, Tou
 import React, { useState, useEffect } from 'react'
 import Layout from '../../../components/Layout/_layout'
 import { useNavigation, CommonActions } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Input from '../../../components/forms/Input';
 import Button from '../../../components/common/Button';
 import { colors } from '../../../colors/Colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { login } from '../../../utils/api/Api';
 import LoadingSpinner from '../../../components/common/Loader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSkip } from '../../../context/SkipContext';
 import { save } from '../../../Service/SecureStore';
 
@@ -22,6 +20,7 @@ export default function Login() {
     });
 
     const { saveSkipLogin } = useSkip()
+    const { skipLogin } = useSkip()
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
     const navigation = useNavigation();
@@ -92,7 +91,6 @@ export default function Login() {
             };
 
             const data = await login(loginData);
-            console.log("Login response:", data);
 
             if (!data || data.success === false) {
                 setErrors({ ...errors, password: data?.msg || "Invalid login credentials." });
@@ -108,7 +106,9 @@ export default function Login() {
 
             // Success case
             Alert.alert("Success!", data.message || "Login successful!");
+            console.log("data.token",data.token)
             await save('token', data.token);
+        await saveSkipLogin(false)
             setTimeout(() => {
                 navigation.dispatch(
                     CommonActions.reset({

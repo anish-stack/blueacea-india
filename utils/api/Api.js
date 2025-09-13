@@ -111,7 +111,7 @@ export const getMyAllOrder = async ({ userId }) => {
 
   try {
     const res = await axios.get(`${ENDPOINT_URL}/get-order-by-user-id?userId=${userId}`);
-    const allData = res.data.data;
+    const allData = res.data.data; 
     return {
       allOrder: allData,
       activeOrder: allData.filter(item => !['Service Done', 'Cancelled'].includes(item.OrderStatus)),
