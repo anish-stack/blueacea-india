@@ -1,8 +1,8 @@
 import axios from "axios";
 import { getValueFor, save } from "../Service/SecureStore";
 
-const ENDPOINT_URL = "https://api.blueaceindia.com/api/v1";
-// const ENDPOINT_URL = "http://192.168.1.26:7987/api/v1";
+const ENDPOINT_URL = "https://www.api.blueaceindia.com/api/v1";
+// const ENDPOINT_URL = "http://192.168.1.13:7987/api/v1";
 
 const handleApiError = (error) => {
   console.error(error?.response?.data?.message || error.message);

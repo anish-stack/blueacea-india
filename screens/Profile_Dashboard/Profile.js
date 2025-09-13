@@ -137,7 +137,7 @@ export default function Profile() {
                     style: 'destructive',
                     onPress: async () => {
                         try {
-                            const response = await fetch(`https://api.blueaceindia.com/api/v1/delete-my-account/${user?._id}`, {
+                            const response = await fetch(`https://www.api.blueaceindia.com/api/v1/delete-my-account/${user?._id}`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'

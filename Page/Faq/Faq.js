@@ -16,7 +16,7 @@ export default function Faq() {
 
     const fetchFaqData = async () => {
         try {
-            const response = await axios.get('https://api.blueaceindia.com/api/v1/get-all-faq-content')
+            const response = await axios.get('https://www.api.blueaceindia.com/api/v1/get-all-faq-content')
             setFaqData(response.data.data)
         } catch (error) {
             console.error('Error fetching FAQ data:', error)

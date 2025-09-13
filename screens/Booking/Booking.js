@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert, Linking ,Platform} from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { Audio } from 'expo-av';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
@@ -30,10 +30,10 @@ export default function Booking() {
     phoneNumber: '7217619794',
     message: '33',
     voiceNote: '',
-    address: '33',
+    address: '',
     serviceType: '',
     Pincode: '110086',
-    House: '109',
+    houseNo: '109',
     nearByLandMark: '',
     RangeWhereYouWantService: [
       {
@@ -63,13 +63,13 @@ export default function Booking() {
   );
 
   const handleAddressChange = (text) => {
-    handleInputChange('nearByLandMark', text);
+    handleInputChange('address', text);
     debouncedFetchSuggestions(text);
   };
 
   const handleSelectAddress = async (address) => {
     setShowSuggestions(false);
-    handleInputChange('nearByLandMark', address);
+    handleInputChange('address', address);
 
     const coordinates = await fetchGeocode(address);
     if (coordinates) {
@@ -115,7 +115,7 @@ export default function Booking() {
     if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required. Please provide a valid contact number.';
     if (!formData.address) newErrors.address = 'Address is required. Please enter your complete address.';
     if (!formData.Pincode) newErrors.Pincode = 'Pincode is required. Please provide a valid pincode.';
-    if (!formData.nearByLandMark) newErrors.nearByLandMark = 'Landmark is required. Please provide a nearby landmark for better service.';
+    // if (!formData.nearByLandMark) newErrors.nearByLandMark = 'Landmark is required. Please provide a nearby landmark for better service.';
     if (!formData.RangeWhereYouWantService) newErrors.RangeWhereYouWantService = 'Please Give nearByLandMark';
 
     setErrors(newErrors);
@@ -125,7 +125,7 @@ export default function Booking() {
   const handleSubmit = async () => {
     console.log(formData?.RangeWhereYouWantService[0]?.location);
     const errors = validateForm();
-  
+
     if (Object.keys(errors).length > 0) {
       const errorMessages = Object.entries(errors)
         .map(([field, error]) => ` ${error}`)
@@ -133,12 +133,12 @@ export default function Booking() {
       Alert.alert('Input Empty 📝', errorMessages);
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const form = new FormData();
-  
+
       // Append regular form data
       Object.keys(formData).forEach(key => {
         if (key === 'RangeWhereYouWantService') {
@@ -147,35 +147,35 @@ export default function Booking() {
           form.append(key, formData[key]);
         }
       });
-  
+
       // Append voice recording (if exists)
       if (recordings.length > 0 && recordings[0].file) {
         const rawUri = recordings[0].file;
         console.log('Recording URI:', rawUri);
         const fileUri = rawUri.startsWith('file://') ? rawUri : `file://${rawUri}`;
-  
+
         form.append('voiceNote', {
           uri: fileUri,
-          type: 'audio/x-wav', 
+          type: 'audio/x-wav',
           name: 'voiceNote.wav',
         });
       }
-  
-      const response = await axios.post('https://api.blueaceindia.com/api/v1/make-order-app', form, {
+
+      const response = await axios.post('https://www.api.blueaceindia.com/api/v1/make-order-app', form, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       console.log(response?.data?.data);
-  
+
       if (response.data.success) {
         Alert.alert('Booking Successful', 'Your booking has been made successfully.');
         navigation.navigate('Booking-Successful', { data: response?.data?.data });
       } else {
         Alert.alert('Booking Failed', response.data.message || 'An unknown error occurred.');
       }
-  
+
     } catch (error) {
       console.error('Booking Error:', error?.response?.data || error);
       Alert.alert('Booking Failed', 'There was an error submitting your booking. Please try again.');
@@ -183,18 +183,18 @@ export default function Booking() {
       setLoading(false);
     }
   };
-  
+
 
   async function startRecording() {
     try {
       const { status, canAskAgain } = await Audio.requestPermissionsAsync();
-  
+
       if (status === 'granted') {
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
-  
+
         const { recording } = await Audio.Recording.createAsync(
           Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
         );
@@ -262,14 +262,14 @@ export default function Booking() {
             onChangeText={(text) => handleInputChange('fullName', text)}
             error={errors.fullName}
           />
-          <Input
+          {/* <Input
             icon="email"
             placeholder="email"
             value={formData.email}
             onChangeText={(text) => handleInputChange('email', text)}
             keyboardType="email-address"
             error={errors.email}
-          />
+          /> */}
           <Input
             icon="phone"
             placeholder=" Number"
@@ -278,31 +278,23 @@ export default function Booking() {
             keyboardType="phone-pad"
             error={errors.phoneNumber}
           />
-          <Input
+          {/* <Input
             icon="home"
             placeholder="Address"
             value={formData.address}
             onChangeText={(text) => handleInputChange('address', text)}
             error={errors.address}
-          />
-          <Input
-            icon="map-marker"
-            placeholder="Pincode"
-            value={formData.Pincode}
-            onChangeText={(text) => handleInputChange('Pincode', text)}
-            keyboardType="number-pad"
-            error={errors.Pincode}
-          />
+          /> */}
           <Input
             icon="home-outline"
-            placeholder="House Number"
-            value={formData.House}
-            onChangeText={(text) => handleInputChange('House', text)}
+            placeholder="Full Address"
+            value={formData.houseNo}
+            onChangeText={(text) => handleInputChange('houseNo', text)}
           />
           <Input
             icon="map-marker-radius"
             placeholder="Landmark"
-            value={formData.nearByLandMark}
+            value={formData.address}
             onChangeText={handleAddressChange}
           />
           {showSuggestions && (
@@ -311,6 +303,14 @@ export default function Booking() {
               onSelectAddress={handleSelectAddress}
             />
           )}
+          <Input
+            icon="map-marker"
+            placeholder="Pincode"
+            value={formData.Pincode}
+            onChangeText={(text) => handleInputChange('Pincode', text)}
+            keyboardType="number-pad"
+            error={errors.Pincode}
+          />
           <Input
             icon="comment-text-outline"
             placeholder="Message (optional)"

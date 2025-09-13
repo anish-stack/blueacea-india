@@ -89,7 +89,7 @@ export default function UpdateProfile({ isOpen, onClose }) {
         try {
             const formDataToBeSend = convertToFormData()
             const response = await axios.put(
-                `https://api.blueaceindia.com/api/v1/update-user/${user?._id}`,
+                `https://www.api.blueaceindia.com/api/v1/update-user/${user?._id}`,
                 formDataToBeSend,
                 {
                     headers: {

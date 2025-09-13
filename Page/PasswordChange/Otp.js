@@ -57,7 +57,7 @@ export default function Otp({ isOpen, onClose, email, newPassword }) {
         setError('');
 
         try {
-            const response = await axios.post('https://api.blueaceindia.com/api/v1/Verify-Otp', {
+            const response = await axios.post('https://www.api.blueaceindia.com/api/v1/Verify-Otp', {
                 Email: email, PasswordChangeOtp: otpString, NewPassword: newPassword,
             });
             console.log(response.data)
@@ -78,7 +78,7 @@ export default function Otp({ isOpen, onClose, email, newPassword }) {
         setError('');
 
         try {
-            await axios.post('https://api.blueaceindia.com/api/v1/resend-otp', {
+            await axios.post('https://www.api.blueaceindia.com/api/v1/resend-otp', {
                 Email: email
             });
 

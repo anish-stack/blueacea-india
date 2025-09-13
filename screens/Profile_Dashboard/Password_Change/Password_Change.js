@@ -40,7 +40,7 @@ export default function Password_Change({ userId, isShow, OnClose }) {
 
         try {
             const res = await axios.put(
-                `https://api.blueaceindia.com/api/v1/update-old-password/${userId}`,
+                `https://www.api.blueaceindia.com/api/v1/update-old-password/${userId}`,
                 {
                     Password: oldPassword,
                     NewPassword: confirmPassword,

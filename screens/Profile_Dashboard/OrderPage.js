@@ -44,7 +44,7 @@ const OrderCard = ({ order, refreshControl }) => {
         }
 
         try {
-            const response = await axios.post(`https://api.blueaceindia.com/api/v1/create-bill-payment-app/${order._id}`, { totalAmount: order.EstimatedBill.EstimatedTotalPrice });
+            const response = await axios.post(`https://www.api.blueaceindia.com/api/v1/create-bill-payment-app/${order._id}`, { totalAmount: order.EstimatedBill.EstimatedTotalPrice });
 
             console.log('Success:', response.data.success);
             console.log('Payment URL:', response.data.url);

@@ -35,7 +35,7 @@ export default function PasswordChange() {
         setLoading(true)
 
         try {
-            const response = await axios.post('https://api.blueaceindia.com/api/v1/Password-Change', formData);
+            const response = await axios.post('https://www.api.blueaceindia.com/api/v1/Password-Change', formData);
             Alert.alert("Success", response.data.message);
             // setFormData({ Email: "", NewPassword: "" });
             setLoading(false)

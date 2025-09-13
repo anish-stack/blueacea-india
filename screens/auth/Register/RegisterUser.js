@@ -221,7 +221,7 @@ export default function RegisterUser() {
 
         try {
             const response = await axios.post(
-                'https://api.blueaceindia.com/api/v1/Create-User',
+                'https://www.api.blueaceindia.com/api/v1/Create-User',
                 formData,
                 {
                     timeout: 15000,

@@ -41,7 +41,7 @@ export default function Careers() {
   const fetchCareers = async (page) => {
     try {
       setLoading(true)
-      const response = await axios.get(`https://api.blueaceindia.com/api/v1/careers?page=${page}`)
+      const response = await axios.get(`https://www.api.blueaceindia.com/api/v1/careers?page=${page}`)
       setCareers(response.data.data)
       setTotalPages(response.data.totalPages)
       setCurrentPage(response.data.currentPage)
@@ -119,7 +119,7 @@ export default function Careers() {
         type: resumeFile.mimeType,
       })
 
-      const response = await axios.post("https://api.blueaceindia.com/api/v1/create-career-inquiry", form, {
+      const response = await axios.post("https://www.api.blueaceindia.com/api/v1/create-career-inquiry", form, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

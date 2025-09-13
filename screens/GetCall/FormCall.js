@@ -41,7 +41,7 @@ export default function FormCall() {
 
         setLoading(true);
         try {
-            const res = await axios.post('https://api.blueaceindia.com/api/v1/create-contact', formData, {
+            const res = await axios.post('https://www.api.blueaceindia.com/api/v1/create-contact', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
