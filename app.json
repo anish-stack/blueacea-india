@@ -34,6 +34,9 @@
       }
     },
     "android": {
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "buildToolsVersion": "35.0.0",
       "adaptiveIcon": {
         "foregroundImage": "./assets/ic_launcher-web.png",
         "backgroundColor": "#58bcfb"
