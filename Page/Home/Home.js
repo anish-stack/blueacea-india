@@ -6,6 +6,7 @@ import OfferBanner from '../../components/OBanner/OfferBanner';
 import Faq from '../Faq/Faq';
 import GatACall from '../../screens/GetCall/GatACall';
 import { WebView } from 'react-native-webview';
+import ProductHome from '../ProductHome/ProductHome';
 
 export default function Home() {
     const chatbotHTML = `
@@ -50,6 +51,7 @@ export default function Home() {
                     />
                     <Service />
                     <OfferBanner />
+                    <ProductHome />
                     <GatACall />
                     <Faq />
                 </View>

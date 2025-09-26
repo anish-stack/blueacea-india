@@ -23,6 +23,8 @@ import ChatbotWidget from "./ChatbotWidget";
 import { SkipProvider } from "./context/SkipContext";
 import UserVerifyOtp from "./screens/auth/Register/VerifyOtp";
 import CheckAppUpdate from "./context/CheckAppUpdate";
+import Product from "./screens/Product/Product";
+import ProductDetail from "./screens/Product/ProductDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -229,6 +231,14 @@ const App = () => {
         <Stack.Screen
           name="Careers"
           component={Careers}
+        />
+        <Stack.Screen
+          name="Products"
+          component={Product}
+        />
+        <Stack.Screen
+          name="Product_Detail"
+          component={ProductDetail}
         />
       </Stack.Navigator>
 

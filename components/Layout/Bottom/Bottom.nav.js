@@ -13,7 +13,8 @@ const BottomNav = () => {
 
     const tabs = [
         { name: 'Home', icon: 'home', route: 'home' },
-        { name: skipLogin ? 'Login' : 'Profile', icon: 'account', route: skipLogin ? 'login' : 'Profile' },
+        // { name: skipLogin ? 'Login' : 'Profile', icon: 'account', route: skipLogin ? 'login' : 'Profile' },
+        { name: 'Products', icon: 'briefcase', route: 'Products' },
         { name: 'Services', icon: 'briefcase', route: 'Services' },
         { name: 'Careers', icon: 'account-wrench-outline', route: 'Careers' },
         { name: 'Get A Call', icon: 'phone', route: 'get-a-call' },

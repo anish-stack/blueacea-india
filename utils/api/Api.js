@@ -53,6 +53,48 @@ export const GetAllServices = async () => {
   }
 };
 
+export const getAllProduct = async () => {
+  try {
+    const response = await axios.get(`${ENDPOINT_URL}/get-all-products`)
+    return response?.data?.data || [];
+  } catch (error) {
+    handleApiError(error);
+  }
+}
+
+export const getProductByName = async (name) => {
+  try {
+    const response = await axios.get(`${ENDPOINT_URL}/get-product-by-name/${name}`)
+    return response?.data?.data || [];
+  } catch (error) {
+    handleApiError(error)
+  }
+}
+
+export const handleEnquiryForProduct = async (form) => {
+  try {
+    const res = await axios.post(`${ENDPOINT_URL}/create-product-inquiry`, form);
+
+    if (res.data.success === true) {
+      return {
+        status: "success",
+        message: "Thank you! Your enquiry has been submitted successfully. Our team will get back to you soon."
+      };
+    } else {
+      return {
+        status: "error",
+        message: res.data.message || "Something went wrong while submitting your enquiry. Please try again."
+      };
+    }
+  } catch (error) {
+    handleApiError(error);
+    return {
+      status: "error",
+      message: "Unable to process your enquiry at the moment. Please check your connection or try again later."
+    };
+  }
+};
+
 export const promotionalBanner = async () => {
   const token = await getValueFor('token');
   if (!token) throw new Error("Token not found.");
@@ -111,7 +153,7 @@ export const getMyAllOrder = async ({ userId }) => {
 
   try {
     const res = await axios.get(`${ENDPOINT_URL}/get-order-by-user-id?userId=${userId}`);
-    const allData = res.data.data; 
+    const allData = res.data.data;
     return {
       allOrder: allData,
       activeOrder: allData.filter(item => !['Service Done', 'Cancelled'].includes(item.OrderStatus)),
