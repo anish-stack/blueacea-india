@@ -96,8 +96,8 @@ export const handleEnquiryForProduct = async (form) => {
 };
 
 export const promotionalBanner = async () => {
-  const token = await getValueFor('token');
-  if (!token) throw new Error("Token not found.");
+  // const token = await getValueFor('token');
+  // if (!token) throw new Error("Token not found.");
 
   try {
     const response = await axios.get(`${ENDPOINT_URL}/get-all-promotional-banner`);

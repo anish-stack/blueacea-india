@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#ddd',
   },
   enquireButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#00225f',
     padding: 15,
     borderRadius: 4,
     alignItems: 'center',
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   submitButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#00225f',
     padding: 15,
     borderRadius: 4,
     alignItems: 'center',

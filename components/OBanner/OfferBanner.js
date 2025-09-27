@@ -9,6 +9,7 @@ export default function OfferBanner() {
 
     const fetchBanner = async () => {
         const data = await promotionalBanner();
+        // console.log("first",data)
         setBanner(data);
     };
 
